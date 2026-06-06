@@ -211,7 +211,7 @@ function showResult(data) {
   const msg    = document.getElementById("result-msg");
   const action = document.getElementById("action-area");
 
-  score.textContent = `${data.score} / ${data.passScore}`;
+  score.textContent = `${data.score} / ${data.totalMarks || data.passScore}`;
 
   if (data.passed) {
     icon.className = "result-icon pass";
