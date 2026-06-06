@@ -3,14 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CHW Bank Account Validator</title>
+<title>Bank Validator</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
   --navy: #0f2444;
   --navy-mid: #1a3a6b;
-  --navy-soft: #e8eef8;
   --accent: #2563eb;
   --accent-hover: #1d4ed8;
   --ok: #059669;
@@ -27,9 +25,7 @@
   --radius: 14px;
   --shadow: 0 1px 3px rgba(15,36,68,.07), 0 4px 16px rgba(15,36,68,.06);
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--bg);
@@ -38,327 +34,93 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Header ── */
-.header {
-  background: var(--navy);
-  padding: 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-}
-.header-inner {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 18px 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.logo {
-  width: 36px; height: 36px;
-  background: var(--accent);
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
+/* Header */
+.header { background: var(--navy); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,.06); }
+.header-inner { max-width: 560px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; gap: 12px; }
+.logo { width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .logo svg { width: 18px; height: 18px; }
-.header-text h1 {
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -.01em;
-  line-height: 1.2;
-}
-.header-text p {
-  color: rgba(255,255,255,.5);
-  font-size: 12px;
-  margin-top: 1px;
-}
-.chw-badge {
-  margin-left: auto;
-  background: rgba(255,255,255,.1);
-  border: 1px solid rgba(255,255,255,.15);
-  border-radius: 99px;
-  padding: 4px 12px;
-  color: rgba(255,255,255,.85);
-  font-size: 12px;
-  font-weight: 500;
-  white-space: nowrap;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.header-text h1 { color: #fff; font-size: 16px; font-weight: 600; letter-spacing: -.01em; line-height: 1.2; }
+.header-text p { color: rgba(255,255,255,.5); font-size: 12px; margin-top: 1px; }
 
-/* ── Gate screen ── */
-#gate-screen {
-  max-width: 480px;
-  margin: 80px auto;
-  padding: 0 24px;
-  text-align: center;
-}
-.gate-icon {
-  width: 64px; height: 64px;
-  background: var(--err-bg);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 20px;
-}
+/* Gate */
+#gate-screen { max-width: 480px; margin: 80px auto; padding: 0 24px; text-align: center; }
+.gate-icon { width: 64px; height: 64px; background: var(--err-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
 .gate-icon svg { width: 28px; height: 28px; color: var(--err); }
 #gate-screen h2 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
 #gate-screen p { color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-/* ── Main ── */
-main {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 28px 24px 80px;
-}
+/* Main */
+main { max-width: 560px; margin: 0 auto; padding: 28px 24px 80px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 16px; }
+.card-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 18px; }
 
-/* ── Card ── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: var(--shadow);
-  margin-bottom: 16px;
-}
-.card-title {
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  color: var(--muted);
-  margin-bottom: 18px;
-}
-
-/* ── Form fields ── */
-.field { margin-bottom: 14px; }
+/* Fields */
+.field { margin-bottom: 16px; }
 .field:last-child { margin-bottom: 0; }
-label {
-  display: block;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
+label { display: block; font-size: 12.5px; font-weight: 500; color: var(--muted); margin-bottom: 6px; }
 input, select {
-  width: 100%;
-  height: 46px;
-  padding: 0 14px;
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 15px;
-  color: var(--ink);
-  background: #fff;
-  transition: border-color .15s, box-shadow .15s;
-  appearance: none;
-  -webkit-appearance: none;
+  width: 100%; height: 48px; padding: 0 14px;
+  border: 1.5px solid var(--line); border-radius: 10px;
+  font-family: inherit; font-size: 15px; color: var(--ink); background: #fff;
+  transition: border-color .15s, box-shadow .15s; appearance: none; -webkit-appearance: none;
 }
-input[inputmode="numeric"], .mono {
-  font-family: 'DM Mono', monospace;
-  letter-spacing: .04em;
-}
-input:focus, select:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-}
-input.has-value { border-color: #c7d2e8; }
+input[inputmode="numeric"] { font-family: 'DM Mono', monospace; letter-spacing: .06em; font-size: 17px; }
+input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
 select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
-
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-@media(max-width: 520px) { .grid2 { grid-template-columns: 1fr; } }
-
-/* ── Digit counter ── */
-.digit-count {
-  font-size: 11.5px;
-  color: var(--muted);
-  margin-top: 5px;
-  font-family: 'DM Mono', monospace;
-  transition: color .15s;
-}
+.digit-count { font-size: 11.5px; color: var(--muted); margin-top: 5px; font-family: 'DM Mono', monospace; transition: color .15s; }
 .digit-count.ready { color: var(--ok); font-weight: 500; }
-.digit-count.over { color: var(--err); }
 
-/* ── Resolve button ── */
-.btn-resolve {
-  width: 100%;
-  height: 50px;
-  margin-top: 20px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: background .15s, transform .1s, box-shadow .15s;
-  box-shadow: 0 2px 8px rgba(37,99,235,.25);
-}
-.btn-resolve:hover { background: var(--accent-hover); box-shadow: 0 4px 14px rgba(37,99,235,.35); }
-.btn-resolve:active { transform: scale(.985); }
-.btn-resolve:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; }
-.btn-resolve svg { width: 18px; height: 18px; }
-
-/* ── Spinner ── */
-.spin {
-  width: 18px; height: 18px;
-  border: 2.5px solid rgba(255,255,255,.3);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin .7s linear infinite;
-}
+/* Resolving indicator */
+.resolving { display: none; align-items: center; gap: 10px; margin-top: 16px; padding: 14px 16px; background: #f0f5ff; border: 1px solid #d6e3ff; border-radius: 10px; font-size: 14px; color: var(--accent); }
+.resolving.show { display: flex; }
+.spin { width: 18px; height: 18px; border: 2.5px solid rgba(37,99,235,.25); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Result box ── */
-.result-box {
-  margin-top: 16px;
-  border-radius: 10px;
-  padding: 14px 16px;
-  font-size: 14px;
-  display: none;
-  animation: fadeIn .2s ease;
-}
-.result-box.ok { background: var(--ok-bg); border: 1px solid #a7f3d0; }
-.result-box.err { background: var(--err-bg); border: 1px solid #fecaca; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+/* Validated details box */
+.details { display: none; margin-top: 16px; animation: fadeIn .25s ease; }
+.details.show { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.details-box { background: var(--ok-bg); border: 1px solid #a7f3d0; border-radius: 12px; padding: 20px; }
+.details-head { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.details-head svg { width: 18px; height: 18px; color: var(--ok); }
+.details-head span { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--ok); }
+.detail-row { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 0; border-bottom: 1px solid rgba(5,150,105,.12); gap: 16px; }
+.detail-row:last-child { border-bottom: none; }
+.detail-label { font-size: 13px; color: var(--ok-text); opacity: .75; flex-shrink: 0; }
+.detail-value { font-size: 15px; font-weight: 600; color: var(--ok-text); text-align: right; }
+.detail-value.name { font-size: 18px; }
+.detail-value.mono { font-family: 'DM Mono', monospace; }
 
-.result-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
-.result-box.ok .result-label { color: var(--ok); }
-.result-box.err .result-label { color: var(--err); }
-.result-name {
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -.01em;
-  color: var(--ok-text);
-  margin-bottom: 10px;
-}
-.result-box.err .result-name { color: var(--err-text); font-size: 15px; }
+/* Error box */
+.error-box { display: none; margin-top: 16px; background: var(--err-bg); border: 1px solid #fecaca; border-radius: 10px; padding: 14px 16px; font-size: 14px; color: var(--err-text); animation: fadeIn .2s ease; }
+.error-box.show { display: block; }
+.error-box .et { font-weight: 600; margin-bottom: 2px; }
 
-.btn-add {
-  height: 38px;
-  padding: 0 18px;
-  background: var(--ok);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: background .15s;
+/* Submit */
+.btn-submit {
+  width: 100%; height: 52px; margin-top: 18px;
+  background: var(--ok); color: #fff; border: none; border-radius: 12px;
+  font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background .15s, transform .1s, box-shadow .15s;
+  box-shadow: 0 2px 8px rgba(5,150,105,.25);
 }
-.btn-add:hover { background: #047857; }
-.btn-add svg { width: 14px; height: 14px; }
+.btn-submit:hover { background: #047857; box-shadow: 0 4px 14px rgba(5,150,105,.35); }
+.btn-submit:active { transform: scale(.985); }
+.btn-submit:disabled { background: #94a3b8; box-shadow: none; cursor: not-allowed; }
+.btn-submit svg { width: 18px; height: 18px; }
 
-/* ── List card ── */
-.list-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-.list-count {
-  background: var(--navy-soft);
-  color: var(--navy-mid);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 99px;
-}
-
-.btn-download {
-  height: 40px;
-  padding: 0 18px;
-  background: var(--navy);
-  color: #fff;
-  border: none;
-  border-radius: 9px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  transition: background .15s;
-}
-.btn-download:hover { background: var(--navy-mid); }
-.btn-download:disabled { background: #94a3b8; cursor: not-allowed; }
-.btn-download svg { width: 15px; height: 15px; }
-
-/* ── Table ── */
-.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-th {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  color: var(--muted);
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--line);
-  background: #fafbfd;
-  text-align: left;
-  white-space: nowrap;
-}
-td { padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: #fafbfd; }
-.td-name { font-weight: 500; color: var(--ink); }
-.td-acct { font-family: 'DM Mono', monospace; letter-spacing: .04em; color: var(--muted); font-size: 13px; }
-.td-bank { color: var(--muted); }
-.del-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #cbd5e1;
-  padding: 4px;
-  border-radius: 6px;
-  transition: color .15s, background .15s;
-  display: flex;
-  align-items: center;
-}
-.del-btn:hover { color: var(--err); background: var(--err-bg); }
-.empty-state {
-  padding: 32px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 13.5px;
-}
-.empty-state svg { width: 32px; height: 32px; color: #cbd5e1; margin: 0 auto 10px; display: block; }
-
-/* ── Toast ── */
-#toast {
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--navy);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 99px;
-  font-size: 13px;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
-  opacity: 0;
-  z-index: 999;
-  pointer-events: none;
-  box-shadow: 0 4px 20px rgba(0,0,0,.2);
-}
-#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+/* Success screen */
+.success { display: none; text-align: center; padding: 20px 0; animation: fadeIn .3s ease; }
+.success.show { display: block; }
+.success-icon { width: 76px; height: 76px; background: var(--ok-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+.success-icon svg { width: 38px; height: 38px; color: var(--ok); }
+.success h2 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.success p { color: var(--muted); font-size: 14px; line-height: 1.6; margin-bottom: 8px; }
+.success .saved-name { font-weight: 600; color: var(--ink); }
+.btn-another { margin-top: 22px; height: 46px; padding: 0 24px; background: var(--navy); color: #fff; border: none; border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background .15s; }
+.btn-another:hover { background: var(--navy-mid); }
+.btn-another svg { width: 16px; height: 16px; }
 </style>
 </head>
 <body>
@@ -369,102 +131,99 @@ tr:hover td { background: #fafbfd; }
       <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
     </div>
     <div class="header-text">
-      <h1>CHW Bank Validator</h1>
-      <p>Paystack-powered account resolution</p>
+      <h1>Bank Validator</h1>
+      <p>ORS &amp; Zinc Programme</p>
     </div>
-    <div class="chw-badge" id="chw-badge" style="display:none"></div>
   </div>
 </div>
 
-<!-- Gate screen (shown if no ?ref= param) -->
+<!-- Gate -->
 <div id="gate-screen" style="display:none">
   <div class="gate-icon">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
   </div>
   <h2>Access restricted</h2>
-  <p>This validator is only accessible after completing and passing the CHW screening form. Please complete the form first.</p>
+  <p>This validator is only accessible after completing and passing the screening assessment. Please complete the form first.</p>
 </div>
 
-<!-- Main validator (shown if ?ref= param exists) -->
+<!-- Main -->
 <main id="app" style="display:none">
-
-  <!-- Validate card -->
   <div class="card">
-    <div class="card-title">Validate bank account</div>
 
-    <div class="field">
-      <label>CHW Name</label>
-      <input type="text" id="chw-name" placeholder="Full name" autocomplete="off">
-    </div>
+    <!-- Input view -->
+    <div id="input-view">
+      <div class="card-title">Validate bank account</div>
 
-    <div class="grid2">
-      <div class="field" style="margin-bottom:0">
+      <div class="field">
         <label>Bank</label>
         <select id="bank-select">
           <option value="">Select bank…</option>
         </select>
       </div>
-      <div class="field" style="margin-bottom:0">
+
+      <div class="field">
         <label>Account number</label>
-        <input type="text" id="acct-input" inputmode="numeric" maxlength="10" placeholder="0000000000" autocomplete="off">
+        <input type="text" id="acct-input" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit account number" autocomplete="off">
         <div class="digit-count" id="digit-count">0 / 10 digits</div>
       </div>
+
+      <!-- Resolving indicator -->
+      <div class="resolving" id="resolving">
+        <div class="spin"></div>
+        <span>Validating account…</span>
+      </div>
+
+      <!-- Validated details -->
+      <div class="details" id="details">
+        <div class="details-box">
+          <div class="details-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+            <span>Validated account details</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Account name</span>
+            <span class="detail-value name" id="d-name">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Bank</span>
+            <span class="detail-value" id="d-bank">—</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Account number</span>
+            <span class="detail-value mono" id="d-acct">—</span>
+          </div>
+        </div>
+
+        <button class="btn-submit" id="submit-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          Submit account details
+        </button>
+      </div>
+
+      <!-- Error -->
+      <div class="error-box" id="error-box">
+        <div class="et" id="error-title">Could not validate</div>
+        <div id="error-msg"></div>
+      </div>
     </div>
 
-    <button class="btn-resolve" id="resolve-btn" disabled>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      Resolve account name
-    </button>
-
-    <div class="result-box" id="result-box">
-      <div class="result-label" id="result-label"></div>
-      <div class="result-name" id="result-name"></div>
-      <button class="btn-add" id="add-btn" style="display:none">
+    <!-- Success view -->
+    <div class="success" id="success-view">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h2>Submitted successfully</h2>
+      <p>The validated account for <span class="saved-name" id="saved-name"></span> has been recorded.</p>
+      <button class="btn-another" id="another-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-        Add to list
-      </button>
-    </div>
-  </div>
-
-  <!-- List card -->
-  <div class="card">
-    <div class="list-header">
-      <div>
-        <div class="card-title" style="margin-bottom:4px">Validated list</div>
-        <span class="list-count" id="list-count">0 accounts</span>
-      </div>
-      <button class="btn-download" id="download-btn" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download Excel
+        Validate another account
       </button>
     </div>
 
-    <div class="table-wrap" id="table-wrap">
-      <div class="empty-state" id="empty-state">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
-        No validated accounts yet. Resolve an account above to begin.
-      </div>
-      <table id="list-table" style="display:none">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Account name</th>
-            <th>Bank</th>
-            <th>Account no.</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="list-body"></tbody>
-      </table>
-    </div>
   </div>
-
 </main>
 
-<div id="toast"></div>
-
 <script>
-// ── Nigerian banks list ──
 const BANKS = [
   ["Access Bank","044"],["Citibank","023"],["Ecobank","050"],["Fidelity Bank","070"],
   ["First Bank","011"],["First City Monument Bank","214"],["Globus Bank","00103"],
@@ -480,260 +239,148 @@ const BANKS = [
   ["Eyowo","50126"],["9PSB","120001"],["Rubies MFB","125"],["Mint MFB","50304"]
 ].sort((a,b) => a[0].localeCompare(b[0]));
 
-// ── Apps Script Web App URL ──
-// Replace with your deployed Apps Script Web App URL
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO6OKlz66hFDjMAOqSmyS5tAxU1XweNyz5vYG1rcQLbcxw6XbVL26E8TLNvWgtcEM4Cw/exec";
 
-// ── State ──
-let records = [];
-let resolvedRecord = null;
+let resolved = null;
+let chwRef = "";
+let chwName = "";
 
-// ── Init ──
 function init() {
-  // Populate bank dropdown
   const sel = document.getElementById("bank-select");
   BANKS.forEach(([name, code]) => {
     const opt = document.createElement("option");
-    opt.value = code;
-    opt.textContent = name;
+    opt.value = code; opt.textContent = name;
     sel.appendChild(opt);
   });
 
-  // Check for ?ref= param (gate)
   const params = new URLSearchParams(window.location.search);
-  const ref = params.get("ref");
-  const name = params.get("name");
+  chwRef  = params.get("ref") || "";
+  chwName = params.get("name") ? decodeURIComponent(params.get("name")) : "";
 
-  if (!ref) {
+  if (!chwRef) {
     document.getElementById("gate-screen").style.display = "block";
     return;
   }
-
   document.getElementById("app").style.display = "block";
-
-  // Pre-fill CHW name if passed in URL
-  if (name) {
-    const decoded = decodeURIComponent(name);
-    document.getElementById("chw-name").value = decoded;
-    document.getElementById("chw-badge").textContent = decoded;
-    document.getElementById("chw-badge").style.display = "block";
-  }
-
   bindEvents();
 }
 
 function bindEvents() {
   const acctInput = document.getElementById("acct-input");
-  const bankSel = document.getElementById("bank-select");
-  const resolveBtn = document.getElementById("resolve-btn");
+  const bankSel   = document.getElementById("bank-select");
 
   acctInput.addEventListener("input", () => {
-    // Strip non-digits
     acctInput.value = acctInput.value.replace(/\D/g, "").slice(0, 10);
     const n = acctInput.value.length;
     const dc = document.getElementById("digit-count");
     dc.textContent = `${n} / 10 digits`;
-    dc.className = "digit-count" + (n === 10 ? " ready" : n > 10 ? " over" : "");
-    checkReady();
-    clearResult();
+    dc.className = "digit-count" + (n === 10 ? " ready" : "");
+    hideDetails(); hideError();
+    maybeResolve();
   });
 
-  bankSel.addEventListener("change", () => { checkReady(); clearResult(); });
+  bankSel.addEventListener("change", () => { hideDetails(); hideError(); maybeResolve(); });
 
-  resolveBtn.addEventListener("click", resolveAccount);
-
-  document.getElementById("add-btn").addEventListener("click", addToList);
-  document.getElementById("download-btn").addEventListener("click", downloadExcel);
+  document.getElementById("submit-btn").addEventListener("click", submitAccount);
+  document.getElementById("another-btn").addEventListener("click", resetForm);
 }
 
-function checkReady() {
-  const ready = document.getElementById("acct-input").value.length === 10 &&
-                document.getElementById("bank-select").value !== "";
-  document.getElementById("resolve-btn").disabled = !ready;
-}
-
-function clearResult() {
-  resolvedRecord = null;
-  const rb = document.getElementById("result-box");
-  rb.style.display = "none";
-  rb.className = "result-box";
-  document.getElementById("add-btn").style.display = "none";
+function maybeResolve() {
+  const acct = document.getElementById("acct-input").value;
+  const bank = document.getElementById("bank-select").value;
+  if (acct.length === 10 && bank) resolveAccount();
 }
 
 async function resolveAccount() {
-  const acct = document.getElementById("acct-input").value;
+  const acct     = document.getElementById("acct-input").value;
   const bankCode = document.getElementById("bank-select").value;
   const bankName = document.getElementById("bank-select").selectedOptions[0].text;
-  const btn = document.getElementById("resolve-btn");
 
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spin"></div> Resolving…';
+  resolved = null;
+  hideDetails(); hideError();
+  document.getElementById("resolving").classList.add("show");
 
   try {
-    const res = await fetch(
-      `${APPS_SCRIPT_URL}?action=resolve&account_number=${acct}&bank_code=${bankCode}`
-    );
+    const res  = await fetch(`${APPS_SCRIPT_URL}?action=resolve&account_number=${acct}&bank_code=${bankCode}`);
     const data = await res.json();
+    document.getElementById("resolving").classList.remove("show");
 
-    if (data.status && data.data?.account_name) {
-      showResult("ok", "Account resolved", data.data.account_name);
-      resolvedRecord = {
-        name: data.data.account_name,
-        bank: bankName,
-        bankCode,
-        acct
-      };
+    if (data.status && data.data && data.data.account_name) {
+      resolved = { name: data.data.account_name, bank: bankName, bankCode, acct };
+      showDetails(resolved);
     } else {
-      showResult("err", "Could not resolve", data.message || "Account not found. Check the number and bank.");
-      resolvedRecord = null;
+      showError("Could not validate", data.message || "Account not found. Check the number and bank, then try again.");
     }
   } catch (e) {
-    showResult("err", "Network error", "Could not reach Paystack. Check your connection.");
-    resolvedRecord = null;
+    document.getElementById("resolving").classList.remove("show");
+    showError("Network error", "Could not reach the server. Check your connection and try again.");
   }
-
-  btn.disabled = false;
-  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Resolve account name`;
-  checkReady();
 }
 
-function showResult(type, label, message) {
-  const rb = document.getElementById("result-box");
-  rb.style.display = "block";
-  rb.className = "result-box " + type;
-  document.getElementById("result-label").textContent = label;
-  document.getElementById("result-name").textContent = message;
-  document.getElementById("add-btn").style.display = type === "ok" ? "inline-flex" : "none";
+function showDetails(r) {
+  document.getElementById("d-name").textContent = r.name;
+  document.getElementById("d-bank").textContent = r.bank;
+  document.getElementById("d-acct").textContent = r.acct;
+  document.getElementById("details").classList.add("show");
+}
+function hideDetails() { document.getElementById("details").classList.remove("show"); resolved = null; }
+function showError(title, msg) {
+  document.getElementById("error-title").textContent = title;
+  document.getElementById("error-msg").textContent = msg;
+  document.getElementById("error-box").classList.add("show");
+}
+function hideError() { document.getElementById("error-box").classList.remove("show"); }
+
+async function submitAccount() {
+  if (!resolved) return;
+  const btn = document.getElementById("submit-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spin" style="border-color:rgba(255,255,255,.3);border-top-color:#fff"></div> Submitting…';
+
+  try {
+    const params = new URLSearchParams({
+      action:       "save",
+      ref:          chwRef,
+      chw_name:     chwName,
+      account_name: resolved.name,
+      bank_name:    resolved.bank,
+      bank_code:    resolved.bankCode,
+      account_no:   resolved.acct
+    });
+    const res  = await fetch(`${APPS_SCRIPT_URL}?${params}`);
+    const data = await res.json();
+
+    if (data.status) {
+      document.getElementById("saved-name").textContent = resolved.name;
+      document.getElementById("input-view").style.display = "none";
+      document.getElementById("success-view").classList.add("show");
+    } else {
+      btn.disabled = false;
+      btn.innerHTML = submitBtnHtml();
+      showError("Could not submit", data.message || "Something went wrong. Please try again.");
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.innerHTML = submitBtnHtml();
+    showError("Network error", "Could not reach the server. Please try again.");
+  }
 }
 
-function addToList() {
-  if (!resolvedRecord) return;
+function submitBtnHtml() {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg> Submit account details';
+}
 
-  // Check for duplicate account number
-  if (records.find(r => r.acct === resolvedRecord.acct)) {
-    toast("Account already in list");
-    return;
-  }
-
-  records.push({ ...resolvedRecord });
-  renderList();
-
-  // Save to Google Sheet in background
-  saveToSheet(resolvedRecord);
-
-  clearResult();
-
-  // Reset form fields
+function resetForm() {
   document.getElementById("acct-input").value = "";
   document.getElementById("bank-select").value = "";
   document.getElementById("digit-count").textContent = "0 / 10 digits";
   document.getElementById("digit-count").className = "digit-count";
-  document.getElementById("resolve-btn").disabled = true;
-
-  toast("Added to list ✓");
-}
-
-async function saveToSheet(record) {
-  try {
-    const params = new URLSearchParams({
-      action:       "save",
-      ref:          new URLSearchParams(window.location.search).get("ref") || "",
-      chw_name:     document.getElementById("chw-name").value || "",
-      account_name: record.name,
-      bank_name:    record.bank,
-      bank_code:    record.bankCode,
-      account_no:   record.acct
-    });
-    await fetch(`${APPS_SCRIPT_URL}?${params}`);
-  } catch (e) {
-    // Silent fail — data is still in the downloadable Excel
-  }
-}
-
-function renderList() {
-  const tbody = document.getElementById("list-body");
-  const table = document.getElementById("list-table");
-  const empty = document.getElementById("empty-state");
-  const count = document.getElementById("list-count");
-  const dlBtn = document.getElementById("download-btn");
-
-  count.textContent = `${records.length} account${records.length !== 1 ? "s" : ""}`;
-  dlBtn.disabled = records.length === 0;
-
-  if (records.length === 0) {
-    table.style.display = "none";
-    empty.style.display = "block";
-    return;
-  }
-
-  table.style.display = "table";
-  empty.style.display = "none";
-
-  tbody.innerHTML = records.map((r, i) => `
-    <tr>
-      <td style="color:var(--muted);font-size:12px">${i + 1}</td>
-      <td class="td-name">${escHtml(r.name)}</td>
-      <td class="td-bank">${escHtml(r.bank)}</td>
-      <td class="td-acct">${r.acct}</td>
-      <td>
-        <button class="del-btn" onclick="delRecord(${i})" title="Remove">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/><path d="M10,11v6M14,11v6"/><path d="M9,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v2"/></svg>
-        </button>
-      </td>
-    </tr>
-  `).join("");
-}
-
-window.delRecord = function(i) {
-  records.splice(i, 1);
-  renderList();
-  toast("Removed");
-};
-
-function downloadExcel() {
-  if (records.length === 0) return;
-
-  const aoa = [["Account Name", "Bank Name", "Bank Code", "Account Number"]];
-  records.forEach(r => aoa.push([r.name, r.bank, r.bankCode, r.acct]));
-
-  const ws = XLSX.utils.aoa_to_sheet(aoa);
-  // Force account number and bank code as text
-  for (let i = 1; i <= records.length; i++) {
-    const codeCell = ws[XLSX.utils.encode_cell({ r: i, c: 2 })];
-    const acctCell = ws[XLSX.utils.encode_cell({ r: i, c: 3 })];
-    if (codeCell) { codeCell.t = "s"; codeCell.z = "@"; }
-    if (acctCell) { acctCell.t = "s"; acctCell.z = "@"; }
-  }
-  ws["!cols"] = [{ wch: 26 }, { wch: 22 }, { wch: 10 }, { wch: 14 }];
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Validated Accounts");
-
-  const date = new Date().toISOString().slice(0, 10);
-  const fname = `CHW_validated_accounts_${date}.xlsx`;
-
-  const blob = new Blob(
-    [XLSX.write(wb, { bookType: "xlsx", type: "array" })],
-    { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }
-  );
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = fname;
-  a.click();
-  toast("Downloading…");
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
-
-let toastTimer;
-function toast(msg) {
-  const el = document.getElementById("toast");
-  el.textContent = msg;
-  el.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove("show"), 2400);
+  hideDetails(); hideError();
+  const btn = document.getElementById("submit-btn");
+  btn.disabled = false;
+  btn.innerHTML = submitBtnHtml();
+  document.getElementById("success-view").classList.remove("show");
+  document.getElementById("input-view").style.display = "block";
 }
 
 init();
