@@ -64,11 +64,11 @@ input:disabled { background: #f1f5f9; color: var(--muted); cursor: not-allowed; 
         <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       </div>
       <h1>Check your screening result</h1>
-      <p class="subtitle">Enter the email you used to take the test to view your result.</p>
+      <p class="subtitle">Enter your 11-digit NIN to view your result.</p>
       <div class="field">
-        <label>Email address</label>
-        <input type="email" id="email-input" placeholder="you@example.com" autocomplete="email">
-        <div class="hint">Tip: this is the Google email you were signed in with.</div>
+        <label>NIN (National Identification Number)</label>
+        <input type="text" id="nin-input" inputmode="numeric" maxlength="11" placeholder="11-digit NIN" autocomplete="off">
+        <div class="hint">Tip: this is the same NIN you used to enter the screening hall.</div>
       </div>
       <button class="btn" id="check-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -89,19 +89,20 @@ input:disabled { background: #f1f5f9; color: var(--muted); cursor: not-allowed; 
 </div>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJjyRsB_uQLZIl2R3_GAvW4FTsiAGCnmVKT8sy1KClwwZ4Lf9NrHQ-8FQ0ezJkeDMF/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxDULEPTngBagkDibAIwFh7r6xrj5vnEIryM0y3Dc9d2qPirEBUHd6iVfesx8-kaASI/exec";
 
-const emailInput  = document.getElementById("email-input");
+const ninInput    = document.getElementById("nin-input");
 const checkBtn    = document.getElementById("check-btn");
 const errorText   = document.getElementById("error-text");
 const lookupView  = document.getElementById("lookup-view");
 const resultView  = document.getElementById("result-view");
 
 checkBtn.addEventListener("click", checkResult);
-emailInput.addEventListener("keydown", function(e){ if (e.key === "Enter") checkResult(); });
+ninInput.addEventListener("keydown", function(e){ if (e.key === "Enter") checkResult(); });
+ninInput.addEventListener("input", function(){ ninInput.value = ninInput.value.replace(/\D/g, "").slice(0, 11); });
 
-const urlEmail = new URLSearchParams(window.location.search).get("email");
-if (urlEmail) emailInput.value = decodeURIComponent(urlEmail);
+const urlNin = new URLSearchParams(window.location.search).get("nin");
+if (urlNin) ninInput.value = decodeURIComponent(urlNin).replace(/\D/g, "").slice(0, 11);
 
 // Retry with exponential backoff + jitter — absorbs event-day bursts.
 async function fetchJSONWithRetry(url, onRetry) {
@@ -124,14 +125,14 @@ async function fetchJSONWithRetry(url, onRetry) {
 }
 
 async function checkResult() {
-  const email = emailInput.value.trim();
+  const nin = ninInput.value.trim();
   errorText.textContent = "";
-  if (!email || !email.includes("@")) {
-    errorText.textContent = "Please enter a valid email address.";
+  if (!/^[0-9]{11}$/.test(nin)) {
+    errorText.textContent = "Please enter your full 11-digit NIN.";
     return;
   }
   checkBtn.disabled = true;
-  emailInput.disabled = true;
+  ninInput.disabled = true;
   checkBtn.innerHTML = '<div class="spin"></div> Checking…';
 
   // Small random pre-delay: pre-spreads a synchronized "everyone check now" burst.
@@ -139,11 +140,11 @@ async function checkResult() {
 
   try {
     const data = await fetchJSONWithRetry(
-      APPS_SCRIPT_URL + "?action=checkemail&email=" + encodeURIComponent(email),
+      APPS_SCRIPT_URL + "?action=checknin&nin=" + encodeURIComponent(nin),
       function(n){ checkBtn.innerHTML = '<div class="spin"></div> Server busy — retrying… (' + n + ')'; }
     );
     if (!data.found) {
-      errorText.textContent = "No submission found for this email. Please check and try again.";
+      errorText.textContent = "No submission found for this NIN. Please check and try again.";
       resetBtn();
       return;
     }
@@ -156,7 +157,7 @@ async function checkResult() {
 
 function resetBtn() {
   checkBtn.disabled = false;
-  emailInput.disabled = false;
+  ninInput.disabled = false;
   checkBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Check result';
 }
 
